@@ -67,7 +67,7 @@ async def receive_long_message(reader: asyncio.StreamReader):
     return full_data.decode()
 
 async def end_program(writer: asyncio.StreamWriter):
-    print("Shutting down server")
+    print("Closing Connection to Client")
     writer.close()
     await writer.wait_closed()
 # TODO - Make function that checks password attempts and either continues the connection or cuts connection
@@ -108,7 +108,8 @@ async def menu(reader,writer):
         command = message.split()
         print(message)
 
-        #if command[0] == "list":
+        if command[0] == "list":
+            os.listdir("server/myfiles")
         #if command[0] == "put":
         #if command[0] == "get":
         #if command[0] == "remove":
