@@ -53,7 +53,7 @@ async def connect(i):
         password = input("Enter Password: ")
         await send_long_message(writer, password)
         message = await receive_long_message(reader)
-        print(message)
+        #print(message)
         if message == "NAK incorrectPassword\n":
 
             #print("Attempt "+i+" of 3")
@@ -62,7 +62,7 @@ async def connect(i):
             print(message)
 
         if message == "ACK correctPassword\n":
-            print("fuck")
+            #print("fuck")
             break
     await menu(i,reader,writer)
 
