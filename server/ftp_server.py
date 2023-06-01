@@ -98,33 +98,70 @@ async def handle_client(reader, writer):
             await menu(reader,writer)                   # Jump to "Menu" routine to begin command parsing
     await end_program(writer)
 
+
 async def menu(reader,writer):
     #print("asshole")
     #Send intro message once password is correct
     await send_intro_message(writer)
     while True:
         message = await receive_long_message(reader)
-        #print(message)
+
         command = message.split()
-        #print(message)
 
         if command[0] == "list":
             message = os.listdir(path='.')
-            print(message)
+
             str = "ACK Server Directory:\n"
             for ele in message:
                 str = str + ele + "\n"
             await send_long_message(writer, str)
-        #if command[0] == "put":
-        #if command[0] == "get":
-        #if command[0] == "remove":
-        if command[0] == "close":
-            insert = "ACK Closing Program"
+
+        elif command[0] == "put":
+            insert = "checking if file exists..."
+            await send_long_message(writer, insert)
+            towrite = await receive_long_message(reader)
+            if towrite == "file not found":
+                insert = "NAK File does not exist"
+                await send_long_message(writer, insert)
+            else:
+                insert = "ACK Receiving File"
+                await send_long_message(writer, insert)
+                with open(command[1],"w") as f:
+                    f.write(towrite)
+
+        elif command[0] == "get":
+            list = os.listdir(path='.')
+            if command[1] in list:
+                insert = "ACK Sending File\n"
+                await send_long_message(writer, insert)
+                with open(command[1], 'r') as f:
+                    content = f.read()
+                await send_long_message(writer, content)
+            else:
+                insert = "NAK File does not exist"
+                await send_long_message(writer, insert)
+
+
+        elif command[0] == "remove":
+
+            list = os.listdir(path='.')
+            if command[1] in list:
+                os.remove(command[1])
+                insert = "ACK removing file\n"
+                await send_long_message(writer, insert)
+            else:
+                insert = "NAK file not found in directory\n"
+                await send_long_message(writer, insert)
+
+
+        elif command[0] == "close":
+            insert = "ACK Closing Program\n"
             await send_long_message(writer, insert)
             await end_program(writer)
-        if command[0] != "list" + command[0] != "put" + command[0] != "get" + command[0] != "remove" + command[0] != "close":
-            error = "NAK invalidCommand"
+        else:
+            error = "NAK invalidCommand\n"
             await send_long_message(writer, error)
+
 
 
     """
