@@ -104,19 +104,29 @@ async def menu(reader,writer):
     await send_intro_message(writer)
     while True:
         message = await receive_long_message(reader)
-        print(message)
+        #print(message)
         command = message.split()
-        print(message)
+        #print(message)
 
         if command[0] == "list":
-            os.listdir("server/myfiles")
+            message = os.listdir(path='.')
+            print(message)
+            str = "ACK Server Directory:\n"
+            for ele in message:
+                str = str + ele + "\n"
+            await send_long_message(writer, str)
         #if command[0] == "put":
         #if command[0] == "get":
         #if command[0] == "remove":
         if command[0] == "close":
             insert = "ACK Closing Program"
-            await send_long_message(writer,insert)
+            await send_long_message(writer, insert)
             await end_program(writer)
+        if command[0] != "list" + command[0] != "put" + command[0] != "get" + command[0] != "remove" + command[0] != "close":
+            error = "NAK invalidCommand"
+            await send_long_message(writer, error)
+
+
     """
     Part 2: Long Message Exchange Protocol
     """
