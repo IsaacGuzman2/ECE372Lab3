@@ -65,7 +65,7 @@ async def connect(i):
             #print("fuck")
             break
     await menu(i,reader,writer)
-
+    return 0
 
 async def menu(i,reader,writer):
     intro = await recv_intro_message(reader)
@@ -75,7 +75,31 @@ async def menu(i,reader,writer):
         await send_long_message(writer,message)
         answer = await receive_long_message(reader)
         print(answer)
-    
+        command = message.split()
+        if command[0] == "close":
+            return 0
+        elif command[0] == "put":
+            list = os.listdir(path='.')
+            if command[1] in list:
+                with open(command[1],'r') as f:
+                    content = f.read()
+                await send_long_message(writer,content)
+                message = await receive_long_message(reader)
+                print(message)
+            else:
+                content = "file not found"
+                await send_long_message(writer,content)
+                message = await receive_long_message(reader)
+                print(message)
+
+        elif command[0] == "get":
+
+            if answer == "NAK File does not exist":
+                print("\n")
+            else:
+                towrite = await receive_long_message(reader)
+                with open(command[1],'w') as f:
+                    f.write(towrite)
 
 async def main():
     tasks = []
